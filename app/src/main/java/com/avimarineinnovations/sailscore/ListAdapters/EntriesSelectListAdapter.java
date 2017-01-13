@@ -20,7 +20,7 @@ import com.avimarineinnovations.sailscore.R;
 import com.avimarineinnovations.sailscore.Objects.rowObj;
 
 public class EntriesSelectListAdapter extends BaseAdapter {
-	protected static ArrayList<rowObj> combinedList;
+	public static ArrayList<rowObj> combinedList;
 
 	private int[] colors = new int[] { Color.parseColor("#F0F0F0"), Color.parseColor("#D2E4FC") }; 
 

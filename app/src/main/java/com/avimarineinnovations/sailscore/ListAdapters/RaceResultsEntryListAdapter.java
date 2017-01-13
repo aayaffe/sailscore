@@ -25,7 +25,7 @@ import com.avimarineinnovations.sailscore.Objects.EntryResultObj;
 import com.avimarineinnovations.sailscore.R;
 
 public class RaceResultsEntryListAdapter extends BaseAdapter {
-	protected static ArrayList<EntryResultObj> combinedList;
+	public static ArrayList<EntryResultObj> combinedList;
 	private int[] colors = new int[] { Color.parseColor("#F0F0F0"), Color.parseColor("#D2E4FC") }; 
 	private Context mContext;
 	private LayoutInflater mInflater;

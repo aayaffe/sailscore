@@ -26,7 +26,7 @@ import com.avimarineinnovations.sailscore.R;
 import com.avimarineinnovations.sailscore.Objects.TimesObj;
 
 public class TimesEntryListAdapter extends BaseAdapter {
-	protected static ArrayList<TimesObj> combinedList;
+	public static ArrayList<TimesObj> combinedList;
 	private int[] colors = new int[] { Color.parseColor("#F0F0F0"), Color.parseColor("#D2E4FC") }; 
 	private Context mContext;
 	private LayoutInflater mInflater;
