@@ -30,6 +30,8 @@ public class SailscoreDbAdapter {
 	public static final String KEY_CREW="crew";
 	public static final String KEY_CLASS="boatclass";
 	public static final String KEY_PY="py";
+	public static final String KEY_ORC_INSHORE="orc_tot_inshore";
+  public static final String KEY_ORC_OFFSHORE="orc_tot_offshore";
 	public static final String KEY_SAILNO="sailnumber";
 	public static final String KEY_CLUB="club";
 	public static final String KEY_SERIES="series_name";
@@ -63,6 +65,8 @@ public class SailscoreDbAdapter {
 			+ KEY_CREW + " text, "
 			+ KEY_CLASS + " text not null, "
 			+ KEY_PY + " integer not null, "
+      + KEY_ORC_INSHORE + " double not null, "
+      + KEY_ORC_OFFSHORE + " double not null, "
 			+ KEY_SAILNO + " text not null, "
 			+ KEY_CLUB + " text);" ;
 
@@ -150,12 +154,15 @@ public class SailscoreDbAdapter {
 	 * The fields are passed to this method and a ContentValues object used to package
 	 * them up before inserting them into the database.
 	 */
-	public long createEntry(String helm, String crew, String boatclass, int py, String sailnumber, String club) {
+	public long createEntry(String helm, String crew, String boatclass, int py, double orcTotInshore,
+      double orcTotOffshore, String sailnumber, String club) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_HELM,  helm);
 		initialValues.put(KEY_CREW, crew);
 		initialValues.put(KEY_CLASS, boatclass);
 		initialValues.put(KEY_PY, py);
+		initialValues.put(KEY_ORC_INSHORE, orcTotInshore);
+		initialValues.put(KEY_ORC_OFFSHORE, orcTotOffshore);
 		initialValues.put(KEY_SAILNO, sailnumber);
 		initialValues.put(KEY_CLUB, club);
 		return mDb.insert(ENTRIES_TABLE, null, initialValues);
@@ -177,7 +184,7 @@ public class SailscoreDbAdapter {
 	 */
 
 	public Cursor fetchAllEntries() {
-		return mDb.query(ENTRIES_TABLE, new String[] {KEY_ROWID, KEY_HELM, KEY_CREW, KEY_CLASS, KEY_PY, KEY_SAILNO, KEY_CLUB}, null, null, null, null, null);
+		return mDb.query(ENTRIES_TABLE, new String[] {KEY_ROWID, KEY_HELM, KEY_CREW, KEY_CLASS, KEY_PY, KEY_ORC_INSHORE, KEY_ORC_OFFSHORE, KEY_SAILNO, KEY_CLUB}, null, null, null, null, null);
 	}
 	
 	/* Method used to extract a boat entry for use in a series (or any other use).
@@ -190,7 +197,7 @@ public class SailscoreDbAdapter {
 	 */
 	public Cursor fetchEntry(long rowId) throws SQLException {
 		Cursor mCursor = mDb.query(true, ENTRIES_TABLE, new String[] 
-				{KEY_ROWID, KEY_HELM, KEY_CREW, KEY_CLASS, KEY_PY, KEY_SAILNO, KEY_CLUB},
+				{KEY_ROWID, KEY_HELM, KEY_CREW, KEY_CLASS, KEY_PY, KEY_ORC_INSHORE, KEY_ORC_OFFSHORE, KEY_SAILNO, KEY_CLUB},
 				KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		// Cursor would be null if the entry wasn't found
 		if (mCursor != null) {
@@ -209,12 +216,15 @@ public class SailscoreDbAdapter {
 	 * At the very least a field should be added to the database entry to indicate it is in use and this
 	 * could then be used to prevent deletion. For upating a confirmation could be requested.
 	 */
-	public boolean updateEntry (long rowId, String helm, String crew, String boatclass, int py, String sailnumber, String club) {
+	public boolean updateEntry(long rowId, String helm, String crew, String boatclass, int py,
+			double orcTotInshore, double orcTotOffshore, String sailnumber, String club) {
 		ContentValues args = new ContentValues(); // call constructor
 		args.put(KEY_HELM, helm);
 		args.put(KEY_CREW, crew);
 		args.put(KEY_CLASS, boatclass);
 		args.put(KEY_PY, py);
+    args.put(KEY_ORC_INSHORE, orcTotInshore);
+    args.put(KEY_ORC_OFFSHORE, orcTotOffshore);
 		args.put(KEY_SAILNO, sailnumber);
 		args.put(KEY_CLUB, club);
 		// The thing that gets returned is true or false depending on the success of the update.

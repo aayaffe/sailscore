@@ -24,12 +24,15 @@ public class EntryEditActivity extends Activity{
 	private EditText mCrewText;
 	private EditText mClassText;
 	private EditText mPyText;
+	private EditText mOrcTotInshoreText;
+	private EditText mOrcTotOffshoreText;
 	private EditText mSailNumberText;
 	private EditText mClubText;
 	private Button mSaveButton;
 	private Button mNextButton;
 	private Long mRowId;
 	private static final int RESULT_OK = 1;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class EntryEditActivity extends Activity{
 		mCrewText = (EditText) findViewById(R.id.crew);
 		mClassText = (EditText) findViewById(R.id.boat_class);
 		mPyText = (EditText) findViewById(R.id.py);
+		mOrcTotInshoreText = (EditText) findViewById(R.id.orcTotInshore);
+		mOrcTotOffshoreText = (EditText) findViewById(R.id.orcTotOffshore);
 		mSailNumberText = (EditText) findViewById(R.id.sail_number);
 		mClubText = (EditText) findViewById(R.id.club);
 		mSaveButton = (Button) findViewById(R.id.save_button);
@@ -105,6 +110,10 @@ public class EntryEditActivity extends Activity{
 					entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_CLASS)));
 			mPyText.setText(entry.getString(
 					entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_PY)));
+      mOrcTotInshoreText.setText(entry.getString(
+          entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_ORC_INSHORE)));
+      mOrcTotOffshoreText.setText(entry.getString(
+          entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_ORC_OFFSHORE)));
 			mSailNumberText.setText(entry.getString(
 					entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_SAILNO)));
 			mClubText.setText(entry.getString(
@@ -146,6 +155,8 @@ public class EntryEditActivity extends Activity{
 				mCrewText.setText(null);
 				mClassText.setText(null);
 				mPyText.setText(null);
+        mOrcTotInshoreText.setText(null);
+        mOrcTotOffshoreText.setText(null);
 				mSailNumberText.setText(null);
 				mClubText.setText(null);
 				mHelmText.requestFocus();
@@ -164,15 +175,27 @@ public class EntryEditActivity extends Activity{
 		} catch (NumberFormatException e) {
 			py = 1000;
 		}
+    double orcTotInshore;
+    try {
+      orcTotInshore = Double.parseDouble(mOrcTotInshoreText.getText().toString());
+    } catch (NumberFormatException e) {
+      orcTotInshore = 1.000;
+    }
+    double orcTotOffshore;
+    try {
+      orcTotOffshore = Double.parseDouble(mOrcTotOffshoreText.getText().toString());
+    } catch (NumberFormatException e) {
+      orcTotOffshore = 1.000;
+    }
 		String sailnumber = mSailNumberText.getText().toString();
 		String club = mClubText.getText().toString();
 		if (mRowId == null) {
-			long id = mDbHelper.createEntry(helm, crew, boatclass, py, sailnumber, club);
+			long id = mDbHelper.createEntry(helm, crew, boatclass, py, orcTotInshore, orcTotOffshore, sailnumber, club);
 			if (id > 0) {
 				mRowId = id;
 			}
 		}else {
-				mDbHelper.updateEntry(mRowId, helm, crew, boatclass, py, sailnumber, club);
+				mDbHelper.updateEntry(mRowId, helm, crew, boatclass, py,orcTotInshore, orcTotOffshore, sailnumber, club);
 			}
 	}
 	

@@ -215,5 +215,7 @@ will receive 3 points when scored but will still show 4th as a finish position.\
 The app will correctly allocate points for tied places, count backs and the various redress
 and scoring penalty situations.\n\n\n
         </string>
+  <string name="orc_tot_inshore_line">ORC ToT Inshore</string>
+    <string name="orc_tot_offshore_line">ORC ToT offshore</string>
 
 </resources>
