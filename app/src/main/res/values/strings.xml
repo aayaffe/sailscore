@@ -42,7 +42,7 @@
     <string name="discard_profile_line">Discard profile</string>
     <string name="fleet_hcap_line">Fleet or Handicap scoring</string>
     <string name="fleet">Fleet</string>
-    <string name="hcap">Handicap</string>
+    <string name="hcap">PY Handicap</string>
     <string name="select_competitors_button_text">Select competitors</string>
     <string name="series_saved_message">Series saved</string>
     <string name="bad_discard_profile">Bad discard profile</string>
@@ -217,5 +217,6 @@ and scoring penalty situations.\n\n\n
         </string>
   <string name="orc_tot_inshore_line">ORC ToT Inshore</string>
     <string name="orc_tot_offshore_line">ORC ToT offshore</string>
+    <string name="orc">ORC</string>
 
 </resources>

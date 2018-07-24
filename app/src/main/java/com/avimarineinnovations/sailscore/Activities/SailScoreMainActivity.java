@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.amitshekhar.DebugDB;
 import com.avimarineinnovations.sailscore.R;
 
 public class SailScoreMainActivity extends Activity {
@@ -33,7 +34,8 @@ public class SailScoreMainActivity extends Activity {
         mNewSeriesButton = (Button) findViewById(R.id.new_series_button);
         mHelpButton = (Button) findViewById(R.id.instructions_button);
 		// For now all we need to do is start the activity. There is nothing else to do.
-		registerAllButtonListeners();
+			registerAllButtonListeners();
+			DebugDB.getAddressLog();
     }
       
 /*

@@ -57,6 +57,16 @@
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content" 
         	android:text="@string/hcap" />
+      <RadioButton
+        android:id="@+id/radioOrcTotInShore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/orc_tot_inshore_line" />
+      <RadioButton
+        android:id="@+id/radioOrcTotOffShore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/orc_tot_offshore_line" />
     </RadioGroup>    
     <Button 
         android:layout_width="wrap_content" 

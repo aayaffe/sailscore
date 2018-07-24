@@ -70,7 +70,7 @@ public class SeriesEntriesListFragment extends ListFragment{
         super.onListItemClick(l, v, position, id);
 		Cursor seriesCursor = mDbHelper.fetchSeries(mRowId);  // Just need the name of the series
 		int iSeriesType = seriesCursor.getInt(seriesCursor.getColumnIndex(SailscoreDbAdapter.KEY_HCAP));
-		if (iSeriesType == 1) {
+		if (iSeriesType >= 1) {
 			seriesType = true; // handicap - enter times
 		} else {
 			seriesType = false; // fleet - enter positions
