@@ -6,6 +6,7 @@
 
 package com.avimarineinnovations.sailscore.Activities;
 
+import android.util.Log;
 import com.avimarineinnovations.sailscore.HandicapType;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +64,7 @@ public class SeriesScoreListActivity extends ListActivity {
   //float grossPoints = 0;
   private static Font catFont = new Font(Font.FontFamily.HELVETICA, 18,
       Font.BOLD);
+  private static final String TAG = "SeriesScoreListActivity";
 
   /**
    * Called when the activity is first created.
@@ -1169,6 +1171,7 @@ public class SeriesScoreListActivity extends ListActivity {
   }
 
   public void savePDF(Bitmap bmp) {
+    //TODO: Check for external storage permission
     String path = Environment.getExternalStorageDirectory().toString();
     path = path + "/" + "sailscore";
     String folder = "sailscore"; // For now put all images in one place
@@ -1183,6 +1186,15 @@ public class SeriesScoreListActivity extends ListActivity {
     seriesCursor.close();
     OutputStream fOutPng = null;
     File pngFile = new File(path, series + ".png"); // the File to save to
+    if(!pngFile.exists())
+    {
+      try {
+        pngFile.createNewFile();
+      }catch (IOException e){
+        Log.e(TAG,"Failed to create file",e);
+        return; //TODO add a Toast message
+      }
+    }
     try {
       fOutPng = new FileOutputStream(pngFile);
     } catch (FileNotFoundException e) {

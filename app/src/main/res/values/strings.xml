@@ -218,5 +218,7 @@ and scoring penalty situations.\n\n\n
   <string name="orc_tot_inshore_line">ORC ToT Inshore</string>
     <string name="orc_tot_offshore_line">ORC ToT offshore</string>
     <string name="orc">ORC</string>
+  <string name="entry_menu_import_orc">Import from ORC</string>
+  <string name="orc_import_title">Import competitor from ORC</string>
 
 </resources>

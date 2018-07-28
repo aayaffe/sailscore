@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+  <!-- android:button="@drawable/selector_check" -->
+  <CheckBox
+    android:id="@+id/check1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:gravity="left"/>
+  <TextView
+    android:id="@+id/yacht_name"
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toEndOf="@id/check1"
+    android:layout_toRightOf="@id/check1"
+    android:textColor="#000000"
+    android:textSize="16sp"/>
+  <TextView
+    android:id="@+id/sailno"
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="left"
+    android:layout_toEndOf="@id/yacht_name"
+    android:layout_toRightOf="@id/yacht_name"
+    android:paddingStart="10dp"
+    android:paddingLeft="10dp"
+    android:textColor="#000000"
+    android:textSize="16sp"/>
+  <TextView
+    android:id="@+id/cdl"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/yacht_name"
+    android:layout_toEndOf="@id/boat_class"
+    android:layout_toRightOf="@id/boat_class"
+    android:textColor="#000000"
+    android:textSize="12sp"/>
+  <TextView
+    android:id="@+id/boat_class"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/yacht_name"
+    android:layout_toEndOf="@id/check1"
+    android:layout_toRightOf="@id/check1"
+    android:paddingEnd="10dip"
+    android:paddingRight="10dip"
+    android:textColor="#000000"
+    android:textSize="12sp"/>
+</RelativeLayout>
+ 
