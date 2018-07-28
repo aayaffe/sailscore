@@ -21,6 +21,7 @@ import com.avimarineinnovations.sailscore.R;
 public class EntryEditActivity extends Activity{
 	private SailscoreDbAdapter mDbHelper;
 	private EditText mHelmText;
+	private EditText mYachtNameText;
 	private EditText mCrewText;
 	private EditText mClassText;
 	private EditText mPyText;
@@ -41,6 +42,7 @@ public class EntryEditActivity extends Activity{
 		mDbHelper.open();
 		setContentView(R.layout.entry_edit);
         //actionBar.setDisplayHomeAsUpEnabled(true);
+		mYachtNameText = findViewById(R.id.yacht_name);
 		mHelmText = (EditText) findViewById(R.id.helm);
 		mCrewText = (EditText) findViewById(R.id.crew);
 		mClassText = (EditText) findViewById(R.id.boat_class);
@@ -102,6 +104,8 @@ public class EntryEditActivity extends Activity{
 	private void populateFields() {
 		if (mRowId != null && mRowId != 0) {
 			Cursor entry = mDbHelper.fetchEntry(mRowId);
+			mYachtNameText.setText(entry.getString(
+					entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_NAME)));
 			mHelmText.setText(entry.getString(
 					entry.getColumnIndexOrThrow(SailscoreDbAdapter.KEY_HELM)));
 			mCrewText.setText(entry.getString(
@@ -151,6 +155,7 @@ public class EntryEditActivity extends Activity{
 				saveState();
 				//setResult(RESULT_OK);
 				Toast.makeText(EntryEditActivity.this, getString(R.string.entry_saved_message), Toast.LENGTH_SHORT).show();
+				mYachtNameText.setText(null);
 				mHelmText.setText(null);
 				mCrewText.setText(null);
 				mClassText.setText(null);
@@ -159,13 +164,14 @@ public class EntryEditActivity extends Activity{
         mOrcTotOffshoreText.setText(null);
 				mSailNumberText.setText(null);
 				mClubText.setText(null);
-				mHelmText.requestFocus();
+				mYachtNameText.requestFocus();
 				mRowId = null; // to trigger a new entry
 			}
 		});
 	}
 
 	private void saveState() {
+		String yachtName = mYachtNameText.getText().toString();
 		String helm = mHelmText.getText().toString();
 		String crew = mCrewText.getText().toString();
 		String boatclass = mClassText.getText().toString();
@@ -190,12 +196,12 @@ public class EntryEditActivity extends Activity{
 		String sailnumber = mSailNumberText.getText().toString();
 		String club = mClubText.getText().toString();
 		if (mRowId == null) {
-			long id = mDbHelper.createEntry(helm, crew, boatclass, py, orcTotInshore, orcTotOffshore, sailnumber, club);
+			long id = mDbHelper.createEntry(yachtName, helm, crew, boatclass, py, orcTotInshore, orcTotOffshore, sailnumber, club);
 			if (id > 0) {
 				mRowId = id;
 			}
 		}else {
-				mDbHelper.updateEntry(mRowId, helm, crew, boatclass, py,orcTotInshore, orcTotOffshore, sailnumber, club);
+				mDbHelper.updateEntry(mRowId, yachtName, helm, crew, boatclass, py,orcTotInshore, orcTotOffshore, sailnumber, club);
 			}
 	}
 	

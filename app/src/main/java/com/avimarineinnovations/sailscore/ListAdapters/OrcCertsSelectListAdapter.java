@@ -1,6 +1,4 @@
-/*
- * This is a custom list adapter used to bind data to the EntriesSelectListActivity list view.
- */
+
 
 package com.avimarineinnovations.sailscore.ListAdapters;
 
@@ -14,10 +12,11 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.avimarineinnovations.sailscore.Objects.OrcRowObj;
-import com.avimarineinnovations.sailscore.Objects.rowObj;
 import com.avimarineinnovations.sailscore.R;
 import java.util.ArrayList;
-
+/*
+ * This is a custom list adapter used to bind data to the Orc Certs list view.
+ */
 public class OrcCertsSelectListAdapter extends BaseAdapter {
 
   public static ArrayList<OrcRowObj> combinedList;
@@ -54,7 +53,6 @@ public class OrcCertsSelectListAdapter extends BaseAdapter {
       holder = new ViewHolder();
       holder.cdl = (TextView) convertView.findViewById(R.id.cdl);
       holder.yachtName = (TextView) convertView.findViewById(R.id.yacht_name);
-//			holder.crew = (TextView) convertView.findViewById(R.id.crew);
       holder.sailno = (TextView) convertView.findViewById(R.id.sailno);
       holder.boatclass = (TextView) convertView.findViewById(R.id.boat_class);
       holder.check = (CheckBox) convertView.findViewById(R.id.check1);

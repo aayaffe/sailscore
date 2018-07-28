@@ -56,7 +56,6 @@ public class OrcImportActivity extends Activity {
 
   private SailscoreDbAdapter mDbHelper;
   private Button mSaveButton;
-  private Button mNextButton;
   private Long mRowId;
   private static final int RESULT_OK = 1;
   private static final String TAG = "OrcImportActivity";
@@ -64,7 +63,7 @@ public class OrcImportActivity extends Activity {
   private ArrayList<OrcRowObj> combinedList;
   private OrcCertsSelectListAdapter mAdapter;
   private Map<String, String> countries;
-  private List<ORCCertObj> certs;
+  private Map<String, ORCCertObj> certs;
   private ListView certListView;
 
 
@@ -79,7 +78,6 @@ public class OrcImportActivity extends Activity {
     mAdapter = new OrcCertsSelectListAdapter(this, combinedList);
     certListView.setAdapter(mAdapter);
     mSaveButton = findViewById(R.id.save_button);
-    mNextButton = findViewById(R.id.next_button);
     mCountriesSpinner = findViewById(R.id.countries_spinner);
     mCountriesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
       @Override
@@ -88,7 +86,7 @@ public class OrcImportActivity extends Activity {
         certs = getCountryBoats(countryCode);
         combinedList.clear();
         certListView.setAdapter(mAdapter);
-        for (ORCCertObj cert : certs){
+        for (ORCCertObj cert : certs.values()){
           combinedList.add(ORCCertObjToRowObj(cert));
         }
       }
@@ -125,21 +123,21 @@ public class OrcImportActivity extends Activity {
     return ret;
   }
 
-  private List<ORCCertObj> getCountryBoats(String countryCode) {
+  private Map<String, ORCCertObj> getCountryBoats(String countryCode) {
     try {
       Toast.makeText(this,"Downloading boats list",Toast.LENGTH_LONG).show();
       String json = new RetrieveStreamTask().execute("http://data.orc.org/public/WPub.dll?action=DownRMS&CountryId="+countryCode+"&ext=json").get();
 //      Log.d(TAG,json);
-      List<ORCCertObj> ret = new ArrayList<>();
+      Map<String, ORCCertObj> ret = new HashMap<>();
       if (json!=null){
         try {
           JSONObject root = new JSONObject(json);
           JSONArray certsJson = root.getJSONArray("rms");
-          ORCCertObj cert = new ORCCertObj();
+
           for (int i=0; i<certsJson.length(); i++) {
             JSONObject jo = certsJson.getJSONObject(i);
-            cert = convertORCJsonToORCCertObj(jo);
-            ret.add(cert);
+            ORCCertObj cert = convertORCJsonToORCCertObj(jo);
+            ret.put(cert.getSailNo(), cert);
           }
           return ret;
 
@@ -198,11 +196,9 @@ public class OrcImportActivity extends Activity {
   }
 
   private Map<String, String> getCountriesAbbrs() {
-//    String xml = getCountriesXML();
     try {
       Toast.makeText(this,"Downloading countries list",Toast.LENGTH_LONG).show();
       String xml = new RetrieveStreamTask().execute("http://data.orc.org/public/WPub.dll").get();
-      //return xml;
       Log.d(TAG,xml);
       Map<String, String> ret = new HashMap<>();
       if (xml!=null){
@@ -223,7 +219,7 @@ public class OrcImportActivity extends Activity {
               Element element2 = (Element) node;
               co.setId(getValue("CountryId",element2));
               co.setName(getValue("CountryName",element2));
-//              co.setLastUpdate(Date.valueOf(getValue("LastUpdate",element2)));
+//              co.setLastUpdate(Date.valueOf(getValue("LastUpdate",element2))); //TODO add parsing
               co.setCertificatesCount(Integer.valueOf(getValue("CertCount",element2)));
               co.setClubCertCount(Integer.valueOf(getValue("ClubCert",element2)));
             }
@@ -315,39 +311,16 @@ public class OrcImportActivity extends Activity {
         finish();
       }
     });
-
-    /* When this button is pressed the previous entries are all cleared and
-     * focus transfered to the top edit text view to allow a new helm to
-     * be entered.
-     */
-    mNextButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        saveState();
-        //setResult(RESULT_OK);
-        Toast.makeText(OrcImportActivity.this, getString(R.string.entry_saved_message),
-            Toast.LENGTH_SHORT).show();
-
-        mRowId = null; // to trigger a new entry
-      }
-    });
   }
 
   private void saveState() {
-
-//    if (mRowId == null) {
-//      long id = mDbHelper
-//          .createEntry(helm, crew, boatclass, py, orcTotInshore, orcTotOffshore, sailnumber, club);
-//      if (id > 0) {
-//        mRowId = id;
-//      }
-//    } else {
-//      mDbHelper
-//          .updateEntry(mRowId, helm, crew, boatclass, py, orcTotInshore, orcTotOffshore, sailnumber,
-//              club);
-//    }
+    for (OrcRowObj o:combinedList){
+      if (o.getCheckState()){
+        ORCCertObj cert = certs.get(o.getSail());
+        mDbHelper.createEntry(cert.getYachtsName(), "", "", cert.getYachtsClass(), 1000, cert.getTMFInshore(), cert.getTMFOffshore(), cert.getSailNo(), "");
+      }
+    }
   }
-
 }
 
 class RetrieveStreamTask extends AsyncTask<String, Void, String> {

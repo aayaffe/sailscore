@@ -220,5 +220,7 @@ and scoring penalty situations.\n\n\n
     <string name="orc">ORC</string>
   <string name="entry_menu_import_orc">Import from ORC</string>
   <string name="orc_import_title">Import competitor from ORC</string>
+  <string name="add_button_text">Add Selected</string>
+  <string name="yacht_name_line">Yacht Name</string>
 
 </resources>
