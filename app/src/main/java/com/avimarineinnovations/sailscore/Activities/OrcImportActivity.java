@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.avimarineinnovations.sailscore.ListAdapters.EntriesSelectListAdapter;
 import com.avimarineinnovations.sailscore.ListAdapters.OrcCertsSelectListAdapter;
@@ -65,6 +66,7 @@ public class OrcImportActivity extends Activity {
   private Map<String, String> countries;
   private Map<String, ORCCertObj> certs;
   private ListView certListView;
+  private TextView loadingLabel;
 
 
   @Override
@@ -78,17 +80,14 @@ public class OrcImportActivity extends Activity {
     mAdapter = new OrcCertsSelectListAdapter(this, combinedList);
     certListView.setAdapter(mAdapter);
     mSaveButton = findViewById(R.id.save_button);
+    loadingLabel = findViewById(R.id.loading_label);
     mCountriesSpinner = findViewById(R.id.countries_spinner);
     mCountriesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String countryCode = countries.get(mCountriesSpinner.getSelectedItem().toString());
-        certs = getCountryBoats(countryCode);
-        combinedList.clear();
-        certListView.setAdapter(mAdapter);
-        for (ORCCertObj cert : certs.values()){
-          combinedList.add(ORCCertObjToRowObj(cert));
-        }
+        getCountryBoats(countryCode);
+
       }
 
       @Override
@@ -100,15 +99,9 @@ public class OrcImportActivity extends Activity {
         ? savedInstanceState.getLong(SailscoreDbAdapter.KEY_ROWID)
         : null;
     registerButtonListenersAndSetDefaultText();
+    mCountriesSpinner.setEnabled(false);
+    getCountriesAbbrs();
 
-    countries = getCountriesAbbrs();
-    if (countries!=null && !countries.isEmpty()) {
-      String countriesArray[] = Arrays.copyOf(countries.keySet().toArray(),countries.keySet().size(),String[].class);
-      Arrays.sort(countriesArray);
-      ArrayAdapter adapter = new ArrayAdapter<String>(this,
-          android.R.layout.simple_spinner_dropdown_item, countriesArray);
-      mCountriesSpinner.setAdapter(adapter);
-    }
 
   }
 
@@ -123,32 +116,40 @@ public class OrcImportActivity extends Activity {
     return ret;
   }
 
-  private Map<String, ORCCertObj> getCountryBoats(String countryCode) {
-    try {
-      Toast.makeText(this,"Downloading boats list",Toast.LENGTH_LONG).show();
-      String json = new RetrieveStreamTask().execute("http://data.orc.org/public/WPub.dll?action=DownRMS&CountryId="+countryCode+"&ext=json").get();
-//      Log.d(TAG,json);
-      Map<String, ORCCertObj> ret = new HashMap<>();
-      if (json!=null){
-        try {
-          JSONObject root = new JSONObject(json);
-          JSONArray certsJson = root.getJSONArray("rms");
+  private void getCountryBoats(String countryCode) {
+    certListView.setVisibility(View.GONE);
+    loadingLabel.setVisibility(View.VISIBLE);
+      RetrieveStreamTask rst = new RetrieveStreamTask();
+      rst.delegate = new AsyncResponse() {
+        @Override
+        public void processFinish(String output) {
+          String json = output;
+          Map<String, ORCCertObj> ret = new HashMap<>();
+          if (json!=null){
+            try {
+              JSONObject root = new JSONObject(json);
+              JSONArray certsJson = root.getJSONArray("rms");
 
-          for (int i=0; i<certsJson.length(); i++) {
-            JSONObject jo = certsJson.getJSONObject(i);
-            ORCCertObj cert = convertORCJsonToORCCertObj(jo);
-            ret.put(cert.getSailNo(), cert);
+              for (int i=0; i<certsJson.length(); i++) {
+                JSONObject jo = certsJson.getJSONObject(i);
+                ORCCertObj cert = convertORCJsonToORCCertObj(jo);
+                ret.put(cert.getSailNo(), cert);
+              }
+              certs = ret;
+              combinedList.clear();
+              certListView.setAdapter(mAdapter);
+              for (ORCCertObj cert : certs.values()){
+                combinedList.add(ORCCertObjToRowObj(cert));
+              }
+              certListView.setVisibility(View.VISIBLE);
+              loadingLabel.setVisibility(View.GONE);
+            } catch (Exception e) {
+              Log.e(TAG,"Error parsing countries XML",e);
+            }
           }
-          return ret;
-
-        } catch (Exception e) {
-          Log.e(TAG,"Error parsing countries XML",e);
         }
-      }
-    } catch(Exception e){
-      return null;
-    }
-    return null;
+      };
+      rst.execute("http://data.orc.org/public/WPub.dll?action=DownRMS&CountryId="+countryCode+"&ext=json");
   }
 
   @Nullable
@@ -195,46 +196,55 @@ public class OrcImportActivity extends Activity {
     return ret;
   }
 
-  private Map<String, String> getCountriesAbbrs() {
-    try {
-      Toast.makeText(this,"Downloading countries list",Toast.LENGTH_LONG).show();
-      String xml = new RetrieveStreamTask().execute("http://data.orc.org/public/WPub.dll").get();
-      Log.d(TAG,xml);
-      Map<String, String> ret = new HashMap<>();
-      if (xml!=null){
-        try {
-          InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-          Document doc = dBuilder.parse(is);
-
-          Element element=doc.getDocumentElement();
-          element.normalize();
-
-          NodeList nList = doc.getElementsByTagName("ROW");
-          CountryObj co = new CountryObj();
-          for (int i=0; i<nList.getLength(); i++) {
-            Node node = nList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-              Element element2 = (Element) node;
-              co.setId(getValue("CountryId",element2));
-              co.setName(getValue("CountryName",element2));
+  private void getCountriesAbbrs() {
+      RetrieveStreamTask rst = new RetrieveStreamTask();
+      rst.delegate = new AsyncResponse() {
+        @Override
+        public void processFinish(String output) {
+          String xml = output;
+          Log.d(TAG, xml);
+          Map<String, String> ret = new HashMap<>();
+          if (xml != null) {
+            try {
+              InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+              DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+              DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+              Document doc = dBuilder.parse(is);
+              Element element = doc.getDocumentElement();
+              element.normalize();
+              NodeList nList = doc.getElementsByTagName("ROW");
+              CountryObj co = new CountryObj();
+              for (int i = 0; i < nList.getLength(); i++) {
+                Node node = nList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                  Element element2 = (Element) node;
+                  co.setId(getValue("CountryId", element2));
+                  co.setName(getValue("CountryName", element2));
 //              co.setLastUpdate(Date.valueOf(getValue("LastUpdate",element2))); //TODO add parsing
-              co.setCertificatesCount(Integer.valueOf(getValue("CertCount",element2)));
-              co.setClubCertCount(Integer.valueOf(getValue("ClubCert",element2)));
-            }
-            ret.put(co.getName(),co.getId());
-          }
-          return ret;
+                  co.setCertificatesCount(Integer.valueOf(getValue("CertCount", element2)));
+                  co.setClubCertCount(Integer.valueOf(getValue("ClubCert", element2)));
+                }
+                ret.put(co.getName(), co.getId());
+              }
+              countries = ret;
+              if (!countries.isEmpty()) {
+                String countriesArray[] = Arrays
+                    .copyOf(countries.keySet().toArray(), countries.keySet().size(),
+                        String[].class);
+                Arrays.sort(countriesArray);
+                ArrayAdapter adapter = new ArrayAdapter<String>(OrcImportActivity.this,
+                    android.R.layout.simple_spinner_dropdown_item, countriesArray);
+                mCountriesSpinner.setAdapter(adapter);
+                mCountriesSpinner.setEnabled(true);
+              }
 
-        } catch (Exception e) {
-          Log.e(TAG,"Error parsing countries XML",e);
+            } catch (Exception e) {
+              Log.e(TAG, "Error parsing countries XML", e);
+            }
+          }
         }
-      }
-    } catch(Exception e){
-      return null;
-    }
-    return null;
+      };
+      rst.execute("http://data.orc.org/public/WPub.dll");
   }
 
   private static String getValue(String tag, Element element) {
@@ -325,7 +335,7 @@ public class OrcImportActivity extends Activity {
 
 class RetrieveStreamTask extends AsyncTask<String, Void, String> {
   private static final String TAG = "RetrieveStreamTask";
-
+  public AsyncResponse delegate = null;
   protected String doInBackground(String... urls) {
     try {
       URL url = new URL(urls[0]);
@@ -338,10 +348,8 @@ class RetrieveStreamTask extends AsyncTask<String, Void, String> {
       urlConnection.disconnect();
       return ret;
       //catch some possible errors...
-    } catch (MalformedURLException e) {
-      Log.e(TAG,"Error getting countries xml",e);
-    } catch (IOException e) {
-      Log.e(TAG,"Error getting countries xml",e);
+    } catch (IOException  e) {
+      Log.e(TAG,"Error getting file",e);
     }
     return null;
   }
@@ -366,7 +374,12 @@ class RetrieveStreamTask extends AsyncTask<String, Void, String> {
     }
     return baos;
   }
-  protected void onPostExecute(String feed) {
-
+  protected void onPostExecute(String data) {
+    if (delegate!=null) {
+      delegate.processFinish(data);
+    }
   }
+}
+interface AsyncResponse {
+  void processFinish(String output);
 }
