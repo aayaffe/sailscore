@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+    android:id="@+id/menu_insert"
+    android:icon="@android:drawable/ic_menu_add"
+    android:title="@string/entry_menu_insert">
+  </item>
+  <item
+    android:id="@+id/menu_import_from_orc"
+    android:icon="@android:drawable/ic_menu_add"
+    android:title="@string/entry_menu_import_orc">
+  </item>
+
+</menu>
