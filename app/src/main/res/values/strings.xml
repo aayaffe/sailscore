@@ -223,5 +223,6 @@ and scoring penalty situations.\n\n\n
   <string name="add_button_text">Add Selected</string>
   <string name="yacht_name_line">Yacht Name</string>
   <string name="loading_certificates">Loading Certificates...</string>
+  <string name="set_start_time">Set start time</string>
 
 </resources>

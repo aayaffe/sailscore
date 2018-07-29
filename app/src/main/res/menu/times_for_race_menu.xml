@@ -2,14 +2,9 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:id="@+id/menu_insert"
+    android:id="@+id/menu_set_start_time"
     android:icon="@android:drawable/ic_menu_add"
-    android:title="@string/entry_menu_insert">
-  </item>
-  <item
-    android:id="@+id/menu_import_from_orc"
-    android:icon="@android:drawable/ic_menu_add"
-    android:title="@string/entry_menu_import_orc">
+    android:title="@string/set_start_time">
   </item>
 
 </menu>
